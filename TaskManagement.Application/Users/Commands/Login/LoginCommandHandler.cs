@@ -37,7 +37,7 @@ namespace TaskManagement.Application.Users.Commands.Login
                 if (user == null)
                 {
                     _logger.LogWarning("Login failed: User not found - {Email}", request.Email);
-                    return BaseResponse<LoginResponseDto>.CreateError("Invalid email or password");
+                    return BaseResponse<LoginResponseDto>.CreateError("Invalid email");
                 }
 
                 var token = _jwtService.GenerateToken(user);

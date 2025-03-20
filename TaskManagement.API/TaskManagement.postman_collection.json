@@ -24,7 +24,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"gokhan.ovsene@id3.com.tr\",\n    \"password\": \"your-password\"\n}"
+              "raw": "{\n    \"email\": \"gokhan.ovsene@id3.com.tr\",\n }"
             }
           }
         }
