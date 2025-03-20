@@ -1,8 +1,11 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TaskManagement.API.Attributes;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Users.Commands.Login;
 using TaskManagement.Application.Users.DTOs;
+using TaskManagement.Application.Users.Queries.GetUsers;
 using TaskManagement.API.Extensions;
 
 namespace TaskManagement.API.Controllers
@@ -38,6 +41,14 @@ namespace TaskManagement.API.Controllers
         {
             HttpContext.Session.Clear();
             return Ok(new { message = "Logged out successfully" });
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<BaseResponse<List<UserDto>>>> GetUsers()
+        {
+            var result = await _mediator.Send(new GetUsersQuery());
+            return Ok(result);
         }
     }
 } 
