@@ -3,18 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Tasks.Commands.DeleteTask
 {
     public class DeleteTaskCommandHandler : IRequestHandler<DeleteTaskCommand, BaseResponse<Unit>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<DeleteTaskCommandHandler> _logger;
 
         public DeleteTaskCommandHandler(
-            ApplicationDbContext context,
+            IApplicationDbContext context,
             ICurrentUserService currentUserService,
             ILogger<DeleteTaskCommandHandler> logger)
         {

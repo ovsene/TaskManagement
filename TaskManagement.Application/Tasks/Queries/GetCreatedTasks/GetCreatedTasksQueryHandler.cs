@@ -4,18 +4,18 @@ using Microsoft.Extensions.Logging;
 using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Tasks.Queries.GetCreatedTasks
 {
     public class GetCreatedTasksQueryHandler : IRequestHandler<GetCreatedTasksQuery, BaseResponse<List<TaskDto>>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<GetCreatedTasksQueryHandler> _logger;
 
         public GetCreatedTasksQueryHandler(
-            ApplicationDbContext context,
+            IApplicationDbContext context,
             ICurrentUserService currentUserService,
             ILogger<GetCreatedTasksQueryHandler> logger)
         {

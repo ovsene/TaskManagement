@@ -1,0 +1,142 @@
+{
+  "info": {
+    "name": "TaskManagement API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Users/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Users", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"gokhan.ovsene@id3.com.tr\",\n    \"password\": \"your-password\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "Get All Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Tasks"]
+            }
+          }
+        },
+        {
+          "name": "Get Task by Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Tasks", "{{taskId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Tasks"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"New Task\",\n    \"description\": \"Task Description\",\n    \"dueDate\": \"2024-03-20T00:00:00Z\",\n    \"assignedToId\": \"{{userId}}\",\n    \"departmentId\": \"{{departmentId}}\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Users"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:44396"
+    },
+    {
+      "key": "token",
+      "value": "your-jwt-token"
+    },
+    {
+      "key": "taskId",
+      "value": "task-guid"
+    },
+    {
+      "key": "userId",
+      "value": "user-guid"
+    },
+    {
+      "key": "departmentId",
+      "value": "department-guid"
+    }
+  ]
+} 

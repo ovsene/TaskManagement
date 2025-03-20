@@ -1,22 +1,21 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Common.Services;
 using TaskManagement.Application.Users.DTOs;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Users.Commands.Login
 {
     public class LoginCommandHandler : IRequestHandler<LoginCommand, BaseResponse<LoginResponseDto>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IJwtService _jwtService;
         private readonly ILogger<LoginCommandHandler> _logger;
 
         public LoginCommandHandler(
-            ApplicationDbContext context,
+            IApplicationDbContext context,
             IJwtService jwtService,
             ILogger<LoginCommandHandler> logger)
         {
@@ -29,7 +28,7 @@ namespace TaskManagement.Application.Users.Commands.Login
         {
             try
             {
-                _logger.LogInformation("Attempting login for user with email: {Email}", request.Email);
+                _logger.LogInformation("Login attempt for user: {Email}", request.Email);
 
                 var user = await _context.Users
                     .Include(u => u.Department)
@@ -37,35 +36,30 @@ namespace TaskManagement.Application.Users.Commands.Login
 
                 if (user == null)
                 {
-                    _logger.LogWarning("Login failed: User not found with email {Email}", request.Email);
-                    return BaseResponse<LoginResponseDto>.CreateError("Invalid email");
+                    _logger.LogWarning("Login failed: User not found - {Email}", request.Email);
+                    return BaseResponse<LoginResponseDto>.CreateError("Invalid email or password");
                 }
 
+                var token = _jwtService.GenerateToken(user);
+                _logger.LogInformation("Login successful for user: {Email}", request.Email);
 
-                var token = _jwtService.GenerateToken(user.Id, user.Email);
-                _logger.LogInformation("Login successful for user {Email}", request.Email);
-
-                var userDto = new UserDto
+                return BaseResponse<LoginResponseDto>.CreateSuccess(new LoginResponseDto
                 {
-                    Id = user.Id,
-                    Email = user.Email,
-                    Name = user.Name,
-                    DepartmentId = user.DepartmentId,
-                    DepartmentName = user.Department?.Name
-                };
-
-                var response = new LoginResponseDto
-                {
-                    User = userDto,
-                    Token = token
-                };
-
-                return BaseResponse<LoginResponseDto>.CreateSuccess(response, "Login successful");
+                    Token = token,
+                    User = new UserDto
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email,
+                        DepartmentId = user.DepartmentId,
+                        DepartmentName = user.Department?.Name
+                    }
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error during login for user {Email}", request.Email);
-                return BaseResponse<LoginResponseDto>.CreateError("Error during login: " + ex.Message);
+                _logger.LogError(ex, "Error during login for user: {Email}", request.Email);
+                return BaseResponse<LoginResponseDto>.CreateError("An error occurred during login");
             }
         }
     }

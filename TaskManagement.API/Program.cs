@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.API.Services;
 using TaskManagement.API.Middleware;
+using TaskManagement.Domain.Common.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,8 @@ builder.Services.AddApplication();
 // Add Infrastructure Services
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseInMemoryDatabase("TaskManagementDb"));
+
+builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
 // Configure Session
 builder.Services.AddDistributedMemoryCache();
@@ -212,8 +215,7 @@ static void SeedData(ApplicationDbContext context)
                 CreatedById = users[2].Id,
                 AssignedToId = users[0].Id,
                 DepartmentId = departments[0].Id
-            }
-            ,
+            },
             new TaskManagement.Domain.Entities.Task
             {
                 Id = Guid.NewGuid(),

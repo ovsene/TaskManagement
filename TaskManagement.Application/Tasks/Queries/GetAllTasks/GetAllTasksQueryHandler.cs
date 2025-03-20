@@ -1,19 +1,18 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Tasks.Queries.GetAllTasks
 {
     public class GetAllTasksQueryHandler : IRequestHandler<GetAllTasksQuery, BaseResponse<List<TaskDto>>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly ILogger<GetAllTasksQueryHandler> _logger;
 
-        public GetAllTasksQueryHandler(ApplicationDbContext context, ILogger<GetAllTasksQueryHandler> logger)
+        public GetAllTasksQueryHandler(IApplicationDbContext context, ILogger<GetAllTasksQueryHandler> logger)
         {
             _context = context;
             _logger = logger;

@@ -3,15 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Tasks.Queries.GetUserTasks
 {
     public class GetUserTasksQueryHandler : IRequestHandler<GetUserTasksQuery, BaseResponse<List<TaskDto>>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _currentUserService;
-        public GetUserTasksQueryHandler(ApplicationDbContext context, ICurrentUserService currentUserService)
+        public GetUserTasksQueryHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
             _currentUserService = currentUserService;

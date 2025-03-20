@@ -4,20 +4,18 @@ using Microsoft.Extensions.Logging;
 using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
-using TaskManagement.Domain.Entities;
-using TaskManagement.Domain.Enums;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Tasks.Commands.CompleteTask
 {
     public class CompleteTaskCommandHandler : IRequestHandler<CompleteTaskCommand, BaseResponse<TaskDto>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly ILogger<CompleteTaskCommandHandler> _logger;
         private readonly ICurrentUserService _currentUserService;
 
         public CompleteTaskCommandHandler(
-            ApplicationDbContext context,
+            IApplicationDbContext context,
             ILogger<CompleteTaskCommandHandler> logger,
             ICurrentUserService currentUserService)
         {
