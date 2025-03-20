@@ -39,6 +39,8 @@ namespace TaskManagement.Application.Tasks.Queries.GetAllTasks
                         Status = t.Status,
                         CreatedById = t.CreatedById,
                         CreatedByName = t.CreatedBy.Name,
+                        CompletedDate=t.CompletedDate,
+                        Priority = t.Priority,
                         AssignedToId = t.AssignedToId,
                         AssignedToName = t.AssignedTo.Name,
                         DepartmentId = t.DepartmentId,

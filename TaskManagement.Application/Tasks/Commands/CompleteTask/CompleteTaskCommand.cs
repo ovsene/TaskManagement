@@ -7,6 +7,5 @@ namespace TaskManagement.Application.Tasks.Commands.CompleteTask
     public class CompleteTaskCommand : IRequest<BaseResponse<TaskDto>>
     {
         public Guid Id { get; set; }
-        public Guid UserId { get; set; }
     }
 } 

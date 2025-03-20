@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Users.Commands.Login;
 using TaskManagement.Application.Users.DTOs;
+using TaskManagement.API.Extensions;
 
 namespace TaskManagement.API.Controllers
 {
@@ -18,10 +19,25 @@ namespace TaskManagement.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<BaseResponse<UserDto>>> Login([FromBody] LoginCommand command)
+        public async Task<ActionResult<BaseResponse<LoginResponseDto>>> Login([FromBody] LoginCommand command)
         {
             var result = await _mediator.Send(command);
+            
+            if (result.Success)
+            {
+                // Store user information in session
+                HttpContext.Session.SetUserId(result.Data.User.Id);
+                HttpContext.Session.SetUserEmail(result.Data.User.Email);
+            }
+
             return Ok(result);
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return Ok(new { message = "Logged out successfully" });
         }
     }
 } 

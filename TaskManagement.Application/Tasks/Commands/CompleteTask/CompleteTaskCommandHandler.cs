@@ -1,8 +1,10 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
+using TaskManagement.Domain.Entities;
 using TaskManagement.Domain.Enums;
 using TaskManagement.Infrastructure.Data;
 
@@ -12,19 +14,32 @@ namespace TaskManagement.Application.Tasks.Commands.CompleteTask
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<CompleteTaskCommandHandler> _logger;
+        private readonly ICurrentUserService _currentUserService;
 
-        public CompleteTaskCommandHandler(ApplicationDbContext context, ILogger<CompleteTaskCommandHandler> logger)
+        public CompleteTaskCommandHandler(
+            ApplicationDbContext context,
+            ILogger<CompleteTaskCommandHandler> logger,
+            ICurrentUserService currentUserService)
         {
             _context = context;
             _logger = logger;
+            _currentUserService = currentUserService;
         }
 
         public async Task<BaseResponse<TaskDto>> Handle(CompleteTaskCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                _logger.LogInformation("Completing task with ID: {TaskId} by user: {UserId}", request.Id, request.UserId);
+                _logger.LogInformation("Attempting to complete task with ID: {TaskId}", request.Id);
 
+                var currentUserId = _currentUserService.UserId;
+                if (string.IsNullOrEmpty(currentUserId.ToString()))
+                {
+                    _logger.LogWarning("No user ID found in current session");
+                    return BaseResponse<TaskDto>.CreateError("User not authenticated");
+                }
+                var user = await _context.Users
+                   .FirstOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
                 var task = await _context.Tasks
                     .Include(t => t.CreatedBy)
                     .Include(t => t.AssignedTo)
@@ -37,16 +52,17 @@ namespace TaskManagement.Application.Tasks.Commands.CompleteTask
                     return BaseResponse<TaskDto>.CreateError("Task not found");
                 }
 
-                if (task.AssignedToId != request.UserId)
+                if (task.DepartmentId != user.DepartmentId)
                 {
-                    _logger.LogWarning("User {UserId} is not authorized to complete task {TaskId}", request.UserId, request.Id);
-                    return BaseResponse<TaskDto>.CreateError("You are not authorized to complete this task");
+                    _logger.LogWarning("User {UserId} from department {UserDepartmentId} attempted to reject task {TaskId} from department {TaskDepartmentId}",
+                        currentUserId, user.DepartmentId, request.Id, task.DepartmentId);
+                    return BaseResponse<TaskDto>.CreateError("You can only reject tasks assigned to your department");
                 }
 
                 task.Status = TaskManagement.Domain.Enums.TaskStatus.Completed;
                 task.CompletedDate = DateTime.UtcNow;
-
                 await _context.SaveChangesAsync(cancellationToken);
+                _logger.LogInformation("Task {TaskId} completed successfully", request.Id);
 
                 var taskDto = new TaskDto
                 {
@@ -66,7 +82,6 @@ namespace TaskManagement.Application.Tasks.Commands.CompleteTask
                     DepartmentName = task.Department?.Name
                 };
 
-                _logger.LogInformation("Task {TaskId} completed successfully", request.Id);
                 return BaseResponse<TaskDto>.CreateSuccess(taskDto, "Task completed successfully");
             }
             catch (Exception ex)

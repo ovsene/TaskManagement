@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
 using TaskManagement.Infrastructure.Data;
@@ -10,11 +11,16 @@ namespace TaskManagement.Application.Tasks.Commands.RejectTask
     public class RejectTaskCommandHandler : IRequestHandler<RejectTaskCommand, BaseResponse<TaskDto>>
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<RejectTaskCommandHandler> _logger;
 
-        public RejectTaskCommandHandler(ApplicationDbContext context, ILogger<RejectTaskCommandHandler> logger)
+        public RejectTaskCommandHandler(
+            ApplicationDbContext context,
+            ICurrentUserService currentUserService,
+            ILogger<RejectTaskCommandHandler> logger)
         {
             _context = context;
+            _currentUserService = currentUserService;
             _logger = logger;
         }
 
@@ -22,7 +28,23 @@ namespace TaskManagement.Application.Tasks.Commands.RejectTask
         {
             try
             {
-                _logger.LogInformation("Rejecting task with ID: {TaskId} by user: {UserId}", request.Id, request.UserId);
+                _logger.LogInformation("Attempting to reject task with ID: {TaskId}", request.Id);
+
+                var currentUserId = _currentUserService.UserId;
+                if (string.IsNullOrEmpty(currentUserId.ToString()))
+                {
+                    _logger.LogWarning("No user ID found in current session");
+                    return BaseResponse<TaskDto>.CreateError("User not authenticated");
+                }
+
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
+
+                if (user == null)
+                {
+                    _logger.LogWarning("User with ID {UserId} not found", currentUserId);
+                    return BaseResponse<TaskDto>.CreateError("User not found");
+                }
 
                 var task = await _context.Tasks
                     .Include(t => t.CreatedBy)
@@ -36,16 +58,16 @@ namespace TaskManagement.Application.Tasks.Commands.RejectTask
                     return BaseResponse<TaskDto>.CreateError("Task not found");
                 }
 
-                if (task.AssignedToId != request.UserId)
+                if (task.DepartmentId != user.DepartmentId)
                 {
-                    _logger.LogWarning("User {UserId} is not authorized to reject task {TaskId}", request.UserId, request.Id);
-                    return BaseResponse<TaskDto>.CreateError("You are not authorized to reject this task");
+                    _logger.LogWarning("User {UserId} from department {UserDepartmentId} attempted to reject task {TaskId} from department {TaskDepartmentId}", 
+                        currentUserId, user.DepartmentId, request.Id, task.DepartmentId);
+                    return BaseResponse<TaskDto>.CreateError("You can only reject tasks assigned to your department");
                 }
 
-                task.Status = TaskManagement.Domain.Enums.TaskStatus.Rejected;
-                // Store rejection reason in a note or additional field if needed
-
+                task.Status = Domain.Enums.TaskStatus.Rejected;
                 await _context.SaveChangesAsync(cancellationToken);
+                _logger.LogInformation("Task {TaskId} rejected successfully", request.Id);
 
                 var taskDto = new TaskDto
                 {
@@ -54,9 +76,7 @@ namespace TaskManagement.Application.Tasks.Commands.RejectTask
                     Description = task.Description,
                     CreatedDate = task.CreatedDate,
                     DueDate = task.DueDate,
-                    CompletedDate = task.CompletedDate,
                     Status = task.Status,
-                    Priority = task.Priority,
                     CreatedById = task.CreatedById,
                     CreatedByName = task.CreatedBy?.Name,
                     AssignedToId = task.AssignedToId,
@@ -65,7 +85,6 @@ namespace TaskManagement.Application.Tasks.Commands.RejectTask
                     DepartmentName = task.Department?.Name
                 };
 
-                _logger.LogInformation("Task {TaskId} rejected successfully", request.Id);
                 return BaseResponse<TaskDto>.CreateSuccess(taskDto, "Task rejected successfully");
             }
             catch (Exception ex)
@@ -75,4 +94,4 @@ namespace TaskManagement.Application.Tasks.Commands.RejectTask
             }
         }
     }
-} 
+}

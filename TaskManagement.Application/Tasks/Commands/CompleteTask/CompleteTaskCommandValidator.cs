@@ -6,11 +6,7 @@ namespace TaskManagement.Application.Tasks.Commands.CompleteTask
     {
         public CompleteTaskCommandValidator()
         {
-            RuleFor(x => x.Id)
-                .NotEmpty().WithMessage("Id is required");
-
-            RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("UserId is required");
+            RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required");
         }
     }
 } 

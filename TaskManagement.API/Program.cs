@@ -9,6 +9,9 @@ using TaskManagement.Domain.Entities;
 using TaskManagement.Infrastructure.Data;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.OpenApi.Models;
+using TaskManagement.Application.Common.Interfaces;
+using TaskManagement.API.Services;
+using TaskManagement.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +21,27 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
+
+// Register CurrentUserService
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
 // Add Application Services
 builder.Services.AddApplication();
 
 // Add Infrastructure Services
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseInMemoryDatabase("TaskManagementDb"));
+
+// Configure Session
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Configure JWT Settings
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
@@ -100,6 +118,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Add Session Middleware
+app.UseSession();
+
+// Add User Context Middleware
+app.UseUserContext();
+
 // Important: UseAuthentication must come before UseAuthorization
 app.UseAuthentication();
 app.UseAuthorization();
@@ -144,7 +168,8 @@ static void SeedData(ApplicationDbContext context)
         {
             new User { Id = Guid.NewGuid(), Name = "Gökhan Övsene", Email = "gokhan.ovsene@id3.com.tr", DepartmentId = departments[0].Id },
             new User { Id = Guid.NewGuid(), Name = "Nur Uçar", Email = "nur.ucar@id3.com.tr", DepartmentId = departments[1].Id },
-            new User { Id = Guid.NewGuid(), Name = "Kenan Eraslan", Email = "kenan.eraslan@id3.com.tr", DepartmentId = departments[2].Id }
+            new User { Id = Guid.NewGuid(), Name = "Kenan Eraslan", Email = "kenan.eraslan@id3.com.tr", DepartmentId = departments[2].Id },
+            new User { Id = Guid.NewGuid(), Name = "Ertürk Yılmaz", Email = "erturk.yilmaz@id3.com.tr", DepartmentId = departments[0].Id }
         };
         context.Users.AddRange(users);
         context.SaveChanges();
@@ -162,7 +187,7 @@ static void SeedData(ApplicationDbContext context)
                 Status = TaskManagement.Domain.Enums.TaskStatus.Created,
                 CreatedById = users[0].Id,
                 AssignedToId = users[1].Id,
-                DepartmentId = departments[0].Id
+                DepartmentId = departments[1].Id
             },
             new TaskManagement.Domain.Entities.Task
             {
@@ -174,7 +199,7 @@ static void SeedData(ApplicationDbContext context)
                 Status = TaskManagement.Domain.Enums.TaskStatus.Assigned,
                 CreatedById = users[1].Id,
                 AssignedToId = users[2].Id,
-                DepartmentId = departments[1].Id
+                DepartmentId = departments[2].Id
             },
             new TaskManagement.Domain.Entities.Task
             {
@@ -186,7 +211,20 @@ static void SeedData(ApplicationDbContext context)
                 Status = TaskManagement.Domain.Enums.TaskStatus.InProgress,
                 CreatedById = users[2].Id,
                 AssignedToId = users[0].Id,
-                DepartmentId = departments[2].Id
+                DepartmentId = departments[0].Id
+            }
+            ,
+            new TaskManagement.Domain.Entities.Task
+            {
+                Id = Guid.NewGuid(),
+                Title = "Prepare Yearly Report",
+                Description = "Generate financial report for the current year",
+                CreatedDate = DateTime.UtcNow,
+                DueDate = DateTime.UtcNow.AddDays(5),
+                Status = TaskManagement.Domain.Enums.TaskStatus.InProgress,
+                CreatedById = users[0].Id,
+                AssignedToId = users[3].Id,
+                DepartmentId = departments[0].Id
             }
         };
         context.Tasks.AddRange(tasks);

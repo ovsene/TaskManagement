@@ -10,6 +10,7 @@ using TaskManagement.Application.Tasks.Commands.RejectTask;
 using TaskManagement.Application.Tasks.Commands.UpdateTask;
 using TaskManagement.Application.Tasks.DTOs;
 using TaskManagement.Application.Tasks.Queries.GetAllTasks;
+using TaskManagement.Application.Tasks.Queries.GetCreatedTasks;
 using TaskManagement.Application.Tasks.Queries.GetDepartmentTasks;
 using TaskManagement.Application.Tasks.Queries.GetTaskById;
 using TaskManagement.Application.Tasks.Queries.GetUserTasks;
@@ -21,7 +22,7 @@ namespace TaskManagement.API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class TasksController : ControllerBase
+    public class TasksController : BaseApiController
     {
         private readonly IMediator _mediator;
 
@@ -37,11 +38,19 @@ namespace TaskManagement.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet("my-tasks")]
         [ValidateUserId]
-        public async Task<ActionResult<BaseResponse<List<TaskDto>>>> GetUserTasks(Guid userId)
+        public async Task<ActionResult<BaseResponse<List<TaskDto>>>> GetUserTasks()
         {
-            var result = await _mediator.Send(new GetUserTasksQuery { UserId = userId });
+            var result = await _mediator.Send(new GetUserTasksQuery());
+            return Ok(result);
+        }
+
+        [HttpGet("created")]
+        [ValidateUserId]
+        public async Task<ActionResult<BaseResponse<List<TaskDto>>>> GetCreatedTasks()
+        {
+            var result = await _mediator.Send(new GetCreatedTasksQuery());
             return Ok(result);
         }
 
@@ -80,25 +89,25 @@ namespace TaskManagement.API.Controllers
 
         [HttpDelete("{id}")]
         [ValidateUserId]
-        public async Task<ActionResult<BaseResponse<Unit>>> DeleteTask(Guid id, [FromQuery] Guid userId)
+        public async Task<ActionResult<BaseResponse<bool>>> DeleteTask(Guid id)
         {
-            var result = await _mediator.Send(new DeleteTaskCommand { Id = id, UserId = userId });
+            var result = await _mediator.Send(new DeleteTaskCommand { Id = id });
             return Ok(result);
         }
 
-        [HttpPost("{id}/user/{userId}/complete")]
+        [HttpPost("{id}/complete")]
         [ValidateUserId]
-        public async Task<ActionResult<BaseResponse<TaskDto>>> CompleteTask(Guid id, Guid userId)
+        public async Task<ActionResult<BaseResponse<TaskDto>>> CompleteTask(Guid id)
         {
-            var result = await _mediator.Send(new CompleteTaskCommand { Id = id, UserId = userId });
+            var result = await _mediator.Send(new CompleteTaskCommand { Id = id });
             return Ok(result);
         }
 
-        [HttpPost("{id}/user/{userId}/reject")]
+        [HttpPost("{id}/reject")]
         [ValidateUserId]
-        public async Task<ActionResult<BaseResponse<TaskDto>>> RejectTask(Guid id, Guid userId, [FromBody] string rejectionReason)
+        public async Task<ActionResult<BaseResponse<TaskDto>>> RejectTask(Guid id)
         {
-            var result = await _mediator.Send(new RejectTaskCommand { Id = id, UserId = userId, RejectionReason = rejectionReason });
+            var result = await _mediator.Send(new RejectTaskCommand { Id = id });
             return Ok(result);
         }
     }

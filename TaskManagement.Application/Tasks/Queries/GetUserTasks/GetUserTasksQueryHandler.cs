@@ -10,19 +10,21 @@ namespace TaskManagement.Application.Tasks.Queries.GetUserTasks
     public class GetUserTasksQueryHandler : IRequestHandler<GetUserTasksQuery, BaseResponse<List<TaskDto>>>
     {
         private readonly ApplicationDbContext _context;
-
-        public GetUserTasksQueryHandler(ApplicationDbContext context)
+        private readonly ICurrentUserService _currentUserService;
+        public GetUserTasksQueryHandler(ApplicationDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUserService = currentUserService;
         }
 
         public async Task<BaseResponse<List<TaskDto>>> Handle(GetUserTasksQuery request, CancellationToken cancellationToken)
         {
+            var currentUserId = _currentUserService.UserId;
             var tasks = await _context.Tasks
                 .Include(t => t.CreatedBy)
                 .Include(t => t.AssignedTo)
                 .Include(t => t.Department)
-                .Where(t => t.CreatedById == request.UserId)
+                .Where(t => t.CreatedById == currentUserId)
                 .Select(t => new TaskDto
                 {
                     Id = t.Id,
