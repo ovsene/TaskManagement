@@ -13,6 +13,10 @@ using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.API.Services;
 using TaskManagement.API.Middleware;
 using TaskManagement.Domain.Common.Interfaces;
+using MediatR;
+using AutoMapper;
+using FluentValidation.AspNetCore;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +34,12 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // Add Application Services
 builder.Services.AddApplication();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(TaskManagement.Application.DependencyInjection).Assembly));
+builder.Services.AddAutoMapper(typeof(TaskManagement.Application.DependencyInjection).Assembly);
+
+// Add FluentValidation
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssembly(typeof(TaskManagement.Application.DependencyInjection).Assembly);
 
 // Add Infrastructure Services
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
