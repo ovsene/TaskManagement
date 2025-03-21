@@ -44,7 +44,7 @@ namespace TaskManagement.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [ValidateUserId]
         public async Task<ActionResult<BaseResponse<List<UserDto>>>> GetUsers()
         {
             var result = await _mediator.Send(new GetUsersQuery());

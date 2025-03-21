@@ -2,15 +2,15 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Tasks.Queries.GetTaskById
 {
     public class GetTaskByIdQueryHandler : IRequestHandler<GetTaskByIdQuery, BaseResponse<TaskDto>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetTaskByIdQueryHandler(ApplicationDbContext context)
+        public GetTaskByIdQueryHandler(IApplicationDbContext context)
         {
             _context = context;
         }

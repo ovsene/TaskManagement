@@ -21,7 +21,6 @@ namespace TaskManagement.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class TasksController : BaseApiController
     {
         private readonly IMediator _mediator;
@@ -32,6 +31,7 @@ namespace TaskManagement.API.Controllers
         }
 
         [HttpGet]
+        [ValidateUserId]
         public async Task<ActionResult<BaseResponse<List<TaskDto>>>> GetAllTasks()
         {
             var result = await _mediator.Send(new GetAllTasksQuery());

@@ -1,17 +1,16 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Tasks.Queries.GetDepartmentTasks
 {
     public class GetDepartmentTasksQueryHandler : IRequestHandler<GetDepartmentTasksQuery, BaseResponse<List<TaskDto>>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
 
-        public GetDepartmentTasksQueryHandler(ApplicationDbContext context)
+        public GetDepartmentTasksQueryHandler(IApplicationDbContext context)
         {
             _context = context;
         }

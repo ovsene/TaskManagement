@@ -11,17 +11,17 @@ namespace TaskManagement.Application.Tasks.Commands.CreateTask
                 .MaximumLength(200).WithMessage("Title must not exceed 200 characters");
 
             RuleFor(x => x.Description)
-                .NotEmpty().WithMessage("Description is required")
-                .MaximumLength(1000).WithMessage("Description must not exceed 1000 characters");
+                .NotEmpty().WithMessage("Description is required");
 
-            RuleFor(x => x.CreatedById)
-                .NotEmpty().WithMessage("CreatedById is required");
+            RuleFor(x => x.DueDate)
+                .NotEmpty().WithMessage("Due date is required")
+                .GreaterThan(DateTime.UtcNow).WithMessage("Due date must be in the future");
 
             RuleFor(x => x.AssignedToId)
-                .NotEmpty().WithMessage("AssignedToId is required");
+                .NotEmpty().WithMessage("Assigned user is required");
 
             RuleFor(x => x.DepartmentId)
-                .NotEmpty().WithMessage("DepartmentId is required");
+                .NotEmpty().WithMessage("Department is required");
         }
     }
 } 

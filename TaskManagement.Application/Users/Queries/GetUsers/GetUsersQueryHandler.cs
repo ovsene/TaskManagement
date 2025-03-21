@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Users.DTOs;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Users.Queries.GetUsers
 {
     public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, BaseResponse<List<UserDto>>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly ILogger<GetUsersQueryHandler> _logger;
 
-        public GetUsersQueryHandler(ApplicationDbContext context, ILogger<GetUsersQueryHandler> logger)
+        public GetUsersQueryHandler(IApplicationDbContext context, ILogger<GetUsersQueryHandler> logger)
         {
             _context = context;
             _logger = logger;

@@ -4,18 +4,18 @@ using Microsoft.Extensions.Logging;
 using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Tasks.Commands.RejectTask
 {
     public class RejectTaskCommandHandler : IRequestHandler<RejectTaskCommand, BaseResponse<TaskDto>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<RejectTaskCommandHandler> _logger;
 
         public RejectTaskCommandHandler(
-            ApplicationDbContext context,
+            IApplicationDbContext context,
             ICurrentUserService currentUserService,
             ILogger<RejectTaskCommandHandler> logger)
         {

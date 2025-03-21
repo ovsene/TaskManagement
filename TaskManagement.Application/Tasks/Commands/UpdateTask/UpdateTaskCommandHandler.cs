@@ -1,19 +1,18 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Tasks.Commands.UpdateTask
 {
     public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, BaseResponse<TaskDto>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly ILogger<UpdateTaskCommandHandler> _logger;
 
-        public UpdateTaskCommandHandler(ApplicationDbContext context, ILogger<UpdateTaskCommandHandler> logger)
+        public UpdateTaskCommandHandler(IApplicationDbContext context, ILogger<UpdateTaskCommandHandler> logger)
         {
             _context = context;
             _logger = logger;

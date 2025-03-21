@@ -1,21 +1,18 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TaskManagement.Application.Common.Interfaces;
 using TaskManagement.Application.Common.Models;
 using TaskManagement.Application.Tasks.DTOs;
-using TaskManagement.Domain.Entities;
-using TaskManagement.Domain.Enums;
-using TaskManagement.Infrastructure.Data;
+using TaskManagement.Domain.Common.Interfaces;
 
 namespace TaskManagement.Application.Tasks.Commands.CreateTask
 {
     public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, BaseResponse<TaskDto>>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly ILogger<CreateTaskCommandHandler> _logger;
 
-        public CreateTaskCommandHandler(ApplicationDbContext context, ILogger<CreateTaskCommandHandler> logger)
+        public CreateTaskCommandHandler(IApplicationDbContext context, ILogger<CreateTaskCommandHandler> logger)
         {
             _context = context;
             _logger = logger;
