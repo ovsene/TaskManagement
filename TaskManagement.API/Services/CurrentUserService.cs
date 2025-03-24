@@ -17,11 +17,12 @@ namespace TaskManagement.API.Services
         {
             get
             {
-                var userContext = _httpContextAccessor.HttpContext?.Items["CurrentUser"] as UserContext;
-                if (userContext == null)
+                var userClaims = _httpContextAccessor.HttpContext.User.Claims;
+                var userIdClaim = userClaims.FirstOrDefault(c => c.Type == "userId");
+                if (userIdClaim == null)
                     throw new UnauthorizedAccessException("User is not authenticated");
-                
-                return userContext.UserId;
+
+                return Guid.Parse(userIdClaim?.ToString().Split(":")[1]);
             }
         }
 
@@ -29,11 +30,12 @@ namespace TaskManagement.API.Services
         {
             get
             {
-                var userContext = _httpContextAccessor.HttpContext?.Items["CurrentUser"] as UserContext;
-                if (userContext == null)
+                var userClaims = _httpContextAccessor.HttpContext.User.Claims;
+                var emailClaim = userClaims.FirstOrDefault(c => c.Type == "email");
+                if (emailClaim == null)
                     throw new UnauthorizedAccessException("User is not authenticated");
-                
-                return userContext.Email;
+
+                return emailClaim?.ToString().Split(":")[1];
             }
         }
 
