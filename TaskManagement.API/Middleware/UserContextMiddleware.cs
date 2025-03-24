@@ -13,13 +13,15 @@ namespace TaskManagement.API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var userId = context.Session.GetUserId();
-            if (userId.HasValue)
+            var userClaims = context.User.Claims;
+            var userIdClaim = userClaims.FirstOrDefault(c => c.Type == "userId");
+            var emailClaim = userClaims.FirstOrDefault(c => c.Type == "email");
+            if (userIdClaim != null && string.IsNullOrEmpty(userIdClaim?.ToString()))
             {
                 context.Items["CurrentUser"] = new UserContext
                 {
-                    UserId = userId.Value,
-                    Email = context.Session.GetUserEmail()
+                    UserId = Guid.Parse(userIdClaim?.ToString().Split(":")[1]),
+                    Email = emailClaim?.ToString().Split(":")[1]
                 };
             }
 
@@ -39,4 +41,4 @@ namespace TaskManagement.API.Middleware
             return builder.UseMiddleware<UserContextMiddleware>();
         }
     }
-} 
+}

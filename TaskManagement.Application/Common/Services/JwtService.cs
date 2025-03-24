@@ -34,7 +34,9 @@ namespace TaskManagement.Application.Common.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("departmentId", user.DepartmentId.ToString())
+                new Claim("departmentId", user.DepartmentId.ToString()),
+                new Claim("userId", user.Id.ToString()),
+                new Claim("email", user.Email.ToString())
             };
 
             var token = new JwtSecurityToken(

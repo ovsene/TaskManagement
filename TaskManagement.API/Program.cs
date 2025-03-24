@@ -83,18 +83,34 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll",
+//        builder =>
+//        {
+//            builder
+//                .AllowAnyOrigin()
+//                .AllowAnyMethod()
+//                .AllowAnyHeader();
+//        });
+//});
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        builder =>
-        {
-            builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
+    options.AddPolicy(name: "AllowAll", builder =>
+    {
+        builder.WithOrigins("http://*.id3.com.tr",
+            "https://*.id3.com.tr",
+            "https://localhost:3001",
+            "http://localhost:3001",
+            "http://167.86.125.48:8058",
+            "https://167.86.125.48:8058",
+            "http://127.0.0.1:3001")
+        .SetIsOriginAllowedToAllowWildcardSubdomains()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
 });
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

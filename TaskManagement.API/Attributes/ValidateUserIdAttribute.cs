@@ -9,14 +9,15 @@ namespace TaskManagement.API.Attributes
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var userId = context.HttpContext.Session.GetUserId();
-            
-            if (!userId.HasValue)
+            var userClaims = context.HttpContext.User.Claims;
+            var userIdClaim = userClaims.FirstOrDefault(c => c.Type == "userId");
+
+            if (userIdClaim == null || string.IsNullOrEmpty(userIdClaim.ToString()))
             {
                 context.Result = new UnauthorizedObjectResult("User not authenticated");
                 return;
             }
-            context.HttpContext.Items["UserId"] = userId.Value;
+
         }
     }
-} 
+}
