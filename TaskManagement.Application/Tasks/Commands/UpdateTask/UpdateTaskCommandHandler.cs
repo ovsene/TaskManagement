@@ -62,6 +62,7 @@ namespace TaskManagement.Application.Tasks.Commands.UpdateTask
                 task.DueDate = request.DueDate;
                 task.AssignedToId = request.AssignedToId;
                 task.DepartmentId = request.DepartmentId;
+                task.Priority = request.Priority;
 
                 await _context.SaveChangesAsync(cancellationToken);
                 _logger.LogInformation("Task {TaskId} updated successfully", task.Id);
@@ -91,7 +92,8 @@ namespace TaskManagement.Application.Tasks.Commands.UpdateTask
                     AssignedToId = updatedTask.AssignedToId,
                     AssignedToName = updatedTask.AssignedTo?.Name,
                     DepartmentId = updatedTask.DepartmentId,
-                    DepartmentName = updatedTask.Department?.Name
+                    DepartmentName = updatedTask.Department?.Name,
+                    Priority=updatedTask.Priority,
                 };
 
                 return BaseResponse<TaskDto>.CreateSuccess(taskDto, "Task updated successfully");
