@@ -129,32 +129,25 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+app.UseCors("AllowAll");
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "TaskManagement API V1");
-        c.DocExpansion(DocExpansion.None);
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "TaskManagement API V1");
+    c.DocExpansion(DocExpansion.None);
+});
 
 app.UseHttpsRedirection();
 
-
-app.UseCors("AllowAll");
-
-
 app.UseSession();
-
 
 app.UseUserContext();
 
-
 app.UseAuthentication();
-app.UseAuthorization();
 
+app.UseAuthorization();
 
 using (var scope = app.Services.CreateScope())
 {

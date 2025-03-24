@@ -40,7 +40,7 @@ A .NET 8 Web API project implementing Clean Architecture with CQRS pattern.
 
 2. Run the container:
    ```bash
-   docker run -d -p 80:80 -p 443:443 taskmanagement-api
+   docker run -d -p 8080:8080 -p 8081:8081 taskmanagement-api
    ```
 
 ## API Documentation
