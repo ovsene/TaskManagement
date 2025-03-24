@@ -24,7 +24,6 @@ namespace TaskManagement.Application.Tasks.Commands.CreateTask
             {
                 _logger.LogInformation("Creating new task with title: {Title}", request.Title);
 
-                // Verify that the related entities exist
                 var createdBy = await _context.Users.FindAsync(request.CreatedById);
                 if (createdBy == null)
                 {
@@ -56,7 +55,8 @@ namespace TaskManagement.Application.Tasks.Commands.CreateTask
                     Status = TaskManagement.Domain.Enums.TaskStatus.Created,
                     CreatedById = request.CreatedById,
                     AssignedToId = request.AssignedToId,
-                    DepartmentId = request.DepartmentId
+                    DepartmentId = request.DepartmentId,
+                    Priority=request.Priority
                 };
 
                 _context.Tasks.Add(task);
@@ -81,7 +81,8 @@ namespace TaskManagement.Application.Tasks.Commands.CreateTask
                         AssignedToId = t.AssignedToId,
                         AssignedToName = t.AssignedTo.Name,
                         DepartmentId = t.DepartmentId,
-                        DepartmentName = t.Department.Name
+                        DepartmentName = t.Department.Name,
+                        Priority = t.Priority
                     })
                     .FirstOrDefaultAsync(cancellationToken);
 

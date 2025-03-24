@@ -32,8 +32,6 @@ namespace TaskManagement.API.Middleware
         public Guid UserId { get; set; }
         public string Email { get; set; }
     }
-
-    // Extension method to make it easier to add the middleware
     public static class UserContextMiddlewareExtensions
     {
         public static IApplicationBuilder UseUserContext(this IApplicationBuilder builder)

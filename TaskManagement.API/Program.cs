@@ -20,34 +20,32 @@ using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add HttpContextAccessor
+
 builder.Services.AddHttpContextAccessor();
 
-// Register CurrentUserService
+
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-// Add Application Services
+
 builder.Services.AddApplication();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(TaskManagement.Application.DependencyInjection).Assembly));
 builder.Services.AddAutoMapper(typeof(TaskManagement.Application.DependencyInjection).Assembly);
 
-// Add FluentValidation
+
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssembly(typeof(TaskManagement.Application.DependencyInjection).Assembly);
 
-// Add Infrastructure Services
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseInMemoryDatabase("TaskManagementDb"));
 
 builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
-// Configure Session
+
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -56,12 +54,12 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Configure JWT Settings
+
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IJwtService, JwtService>();
 
-// Configure Authentication & Authorization
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -84,7 +82,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Add CORS
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -102,7 +100,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "TaskManagement API", Version = "v1" });
 
-    // Configure JWT Authentication in Swagger
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "Enter your token",
@@ -131,7 +129,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -144,20 +142,20 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Add CORS Middleware
+
 app.UseCors("AllowAll");
 
-// Add Session Middleware
+
 app.UseSession();
 
-// Add User Context Middleware
+
 app.UseUserContext();
 
-// Important: UseAuthentication must come before UseAuthorization
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Initialize Database and Seed Data
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

@@ -24,7 +24,6 @@ namespace TaskManagement.Application.Tasks.Commands.UpdateTask
             {
                 _logger.LogInformation("Updating task with ID: {TaskId}", request.Id);
 
-                // Verify that the related entities exist
                 var assignedTo = await _context.Users.FindAsync(request.AssignedToId);
                 if (assignedTo == null)
                 {
@@ -67,7 +66,6 @@ namespace TaskManagement.Application.Tasks.Commands.UpdateTask
                 await _context.SaveChangesAsync(cancellationToken);
                 _logger.LogInformation("Task {TaskId} updated successfully", task.Id);
 
-                // Reload the task with all related entities to ensure we have the latest data
                 var updatedTask = await _context.Tasks
                     .Include(t => t.CreatedBy)
                     .Include(t => t.AssignedTo)

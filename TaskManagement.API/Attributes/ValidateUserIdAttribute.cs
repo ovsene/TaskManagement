@@ -16,8 +16,6 @@ namespace TaskManagement.API.Attributes
                 context.Result = new UnauthorizedObjectResult("User not authenticated");
                 return;
             }
-
-            // Store the user ID in HttpContext.Items for use in the controller
             context.HttpContext.Items["UserId"] = userId.Value;
         }
     }

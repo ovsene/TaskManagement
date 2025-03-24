@@ -28,7 +28,6 @@ namespace TaskManagement.API.Controllers
             
             if (result.Success)
             {
-                // Store user information in session
                 HttpContext.Session.SetUserId(result.Data.User.Id);
                 HttpContext.Session.SetUserEmail(result.Data.User.Email);
             }
