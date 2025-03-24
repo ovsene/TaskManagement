@@ -5,7 +5,7 @@
   },
   "item": [
     {
-      "name": "Authentication",
+      "name": "Users",
       "item": [
         {
           "name": "Login",
@@ -24,7 +24,24 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"gokhan.ovsene@id3.com.tr\",\n }"
+              "raw": "{\n    \"email\": \"gokhan.ovsene@id3.com.tr\"\n }"
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Users"]
             }
           }
         }
@@ -91,14 +108,9 @@
               "raw": "{\n    \"title\": \"New Task\",\n    \"description\": \"Task Description\",\n    \"dueDate\": \"2024-03-20T00:00:00Z\",\n    \"assignedToId\": \"{{userId}}\",\n    \"departmentId\": \"{{departmentId}}\"\n}"
             }
           }
-        }
-      ]
-    },
-    {
-      "name": "Users",
-      "item": [
+        },
         {
-          "name": "Get All Users",
+          "name": "Get My Tasks",
           "request": {
             "method": "GET",
             "header": [
@@ -108,9 +120,119 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/Users",
+              "raw": "{{baseUrl}}/api/Tasks/my-tasks",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "Users"]
+              "path": ["api", "Tasks", "my-tasks"]
+            }
+          }
+        },
+        {
+          "name": "Get Created Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks/created",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Tasks", "created"]
+            }
+          }
+        },
+        {
+          "name": "Get Department Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks/department/{{departmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Tasks", "department", "{{departmentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Tasks", "{{taskId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Updated Task\",\n    \"description\": \"Updated Description\",\n    \"dueDate\": \"2024-03-25T00:00:00Z\",\n    \"assignedToId\": \"{{userId}}\",\n    \"departmentId\": \"{{departmentId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks/{{taskId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Tasks", "{{taskId}}"]
+            }
+          }
+        },
+        {
+          "name": "Complete Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks/{{taskId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Tasks", "{{taskId}}", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Reject Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/Tasks/{{taskId}}/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "Tasks", "{{taskId}}", "reject"]
             }
           }
         }
